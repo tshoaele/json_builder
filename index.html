@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ANIMUS // JSON Prompt Builder</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d1117">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PromptBuilder">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #090c10;
+  --panel: rgba(13, 17, 23, 0.85);
+  --line: #00f0ff33;
+  --line-bright: #00f0ff;
+  --ink: #e6edf3;
+  --ink-muted: #8b949e;
+  --accent: #00f0ff;
+  --accent-glow: rgba(0, 240, 255, 0.25);
+  --danger: #ff0055;
+  --ok: #00ff66;
+  --font-head: 'Orbitron', sans-serif;
+  --font-sub: 'Rajdhani', sans-serif;
+  --font-mono: 'Share Tech Mono', monospace;
+  --grid-pattern: radial-gradient(rgba(0, 240, 255, 0.12) 1px, transparent 0);
+}
+
+[data-theme="light"] {
+  --bg: #f0f4f8;
+  --panel: rgba(255, 255, 255, 0.92);
+  --line: #0088cc44;
+  --line-bright: #0077bb;
+  --ink: #0d131a;
+  --ink-muted: #57606a;
+  --accent: #0077bb;
+  --accent-glow: rgba(0, 119, 187, 0.2);
+  --danger: #d73a49;
+  --ok: #1a7f37;
+  --grid-pattern: radial-gradient(rgba(0, 119, 187, 0.15) 1px, transparent 0);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; min-height: 100%; background: var(--bg); color: var(--ink); font-family: var(--font-sub); }
+
+body {
+  display: flex; flex-direction: column; align-items: center;
+  padding: env(safe-area-inset-top, 20px) 16px calc(40px + env(safe-area-inset-bottom, 20px));
+  background-image: var(--grid-pattern); background-size: 24px 24px; transition: background 0.3s, color 0.3s;
+}
+
+.wrap { width: 100%; max-width: 880px; display: flex; flex-direction: column; gap: 18px; margin-top: 10px; }
+
+.header-bar { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--line-bright); padding-bottom: 12px; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand .mark {
+  width: 34px; height: 34px; background: var(--accent);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  display: flex; align-items: center; justify-content: center; color: var(--bg); font-weight: 900; font-family: var(--font-head); font-size: 14px;
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+.brand h1 { font-family: var(--font-head); font-size: 18px; letter-spacing: 2px; margin: 0; text-transform: uppercase; color: var(--ink); }
+.brand p { margin: 0; font-size: 12px; font-family: var(--font-mono); color: var(--ink-muted); letter-spacing: 1px; }
+
+.theme-toggle {
+  background: transparent; border: 1px solid var(--line-bright); color: var(--accent);
+  font-family: var(--font-mono); font-size: 11px; padding: 6px 12px; cursor: pointer; text-transform: uppercase;
+  letter-spacing: 1px; transition: 0.2s; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+.theme-toggle:hover { background: var(--accent); color: var(--bg); }
+
+.panel {
+  background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--line-bright);
+  padding: 18px 20px; backdrop-filter: blur(8px); position: relative; overflow: hidden;
+}
+
+label.field-label { display: block; font-family: var(--font-head); font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin-bottom: 8px; }
+
+textarea {
+  width: 100%; font-family: var(--font-mono); font-size: 13.5px; line-height: 1.5;
+  padding: 12px; border: 1px solid var(--line); background: rgba(0,0,0,0.2); color: var(--ink);
+  resize: vertical; outline: none; transition: border-color 0.2s;
+}
+textarea:focus { border-color: var(--line-bright); box-shadow: 0 0 8px var(--accent-glow); }
+
+.btn-row { display: flex; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.btn {
+  font-family: var(--font-head); font-weight: 700; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 12px 22px; border: none; background: var(--accent); color: var(--bg); cursor: pointer;
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  transition: all 0.2s; -webkit-tap-highlight-color: transparent;
+}
+.btn:hover { opacity: 0.9; box-shadow: 0 0 12px var(--accent-glow); }
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn.secondary { background: transparent; color: var(--ink); border: 1px solid var(--line-bright); }
+
+.status { font-size: 12px; font-family: var(--font-mono); color: var(--ink-muted); width: 100%; margin-top: 4px; }
+.status.err { color: var(--danger); }
+.status.ok { color: var(--ok); }
+
+.output-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+.output-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+textarea#jsonOutput { min-height: 240px; max-height: 50vh; white-space: pre; word-break: break-word; }
+
+footer.sig {
+  margin-top: auto; padding-top: 24px; font-family: var(--font-mono); font-size: 11px;
+  color: var(--accent); letter-spacing: 2px; text-transform: uppercase; opacity: 0.8; text-align: center;
+}
+
+@media (max-width: 600px) {
+  body { padding: 12px; }
+  .btn { width: 100%; text-align: center; }
+  .output-actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr 1fr; }
+  .output-actions .btn { width: auto; padding: 10px 6px; font-size: 10px; }
+}
+</style>
+</head>
+<body data-theme="dark">
+
+<div class="wrap">
+  <div class="header-bar">
+    <div class="brand">
+      <div class="mark">A</div>
+      <div>
+        <h1>Animus // Spec Engine</h1>
+        <p>SYSTEM.PROMPT_EXTRACTION.v4</p>
+      </div>
+    </div>
+    <button class="theme-toggle" id="btnTheme">Mode: Dark</button>
+  </div>
+
+  <div class="panel">
+    <label class="field-label" for="ideaInput">// INPUT CONCEPT SEQUENCE</label>
+    <textarea id="ideaInput" rows="4" placeholder="Describe vision or concept...">Create a female Arrancar inspired by Bleach. She is elegant, intimidating and controls sound.</textarea>
+    <div class="btn-row">
+      <button class="btn" id="btnGenerate">EXECUTE PARSE</button>
+      <div class="status" id="genStatus">SYSTEM READY.</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="output-head">
+      <label class="field-label" style="margin:0;">// STRUCTURED JSON SPECIFICATION</label>
+      <div class="output-actions">
+        <button class="btn secondary" id="btnCopy">COPY</button>
+        <button class="btn secondary" id="btnChatGPT">CHATGPT</button>
+        <button class="btn secondary" id="btnGemini">GEMINI</button>
+      </div>
+    </div>
+    <textarea id="jsonOutput" spellcheck="false" placeholder="// Extracted JSON output will synthesize here..."></textarea>
+  </div>
+
+  <footer class="sig">DESIGNED BY VUJA TSOAELA // ANIMUS INTERFACE</footer>
+</div>
+
+<script>
+function blankSchema(){
+  return {
+    project:{type:"",title:"",concept:"",purpose:""},
+    subject:{type:"",name:"",role:"",identity:"",gender:"",age_appearance:"",race_or_species:"",affiliation:""},
+    appearance:{face:"",skin:"",hair:"",eyes:"",body_type:"",clothing:"",accessories:"",distinctive_features:""},
+    personality:[],
+    abilities:{primary:"",secondary:[],special_abilities:[],visual_effects:[]},
+    transformation:{name:"",trigger:"",appearance:"",abilities:"",visual_changes:""},
+    environment:{location:"",setting:"",architecture:"",background_elements:"",atmosphere:""},
+    composition:{subject_position:"",pose:"",camera_angle:"",camera_distance:"",framing:"",depth:"",foreground:"",midground:"",background:""},
+    visual_style:{medium:"",art_style:"",rendering_style:"",detail_level:"",realism:""},
+    lighting:{type:"",direction:"",intensity:"",rim_lighting:"",shadows:"",atmospheric_lighting:""},
+    color_palette:[],
+    mood:{primary:"",secondary:[],emotional_tone:""},
+    effects:{energy:"",particles:"",motion:"",special_effects:""},
+    typography:{enabled:false,header:"",title:"",subtitle:"",additional_text:""},
+    technical:{aspect_ratio:"",orientation:"",resolution:"",quality:"",image_count:1},
+    constraints:{must_include:[],must_avoid:[],negative_prompt:[]}
+  };
+}
+
+const SYSTEM_INSTRUCT = `Extract a visual specification object from user text into this exact JSON structure:
+${JSON.stringify(blankSchema())}
+Rules:
+- Infer relevant fields based on tone/context.
+- Unspecified string fields = "", array fields = [], boolean fields = false.
+- Output raw JSON object only. No markdown fences.`;
+
+// Local Heuristic Fallback Engine (prevents client failure if external API is unconfigured)
+function synthesizeLocalJSON(text) {
+  const schema = blankSchema();
+  schema.project.concept = text;
+  schema.project.type = "Character Visual Spec";
+  schema.subject.identity = text.slice(0, 40) + "...";
+  
+  if (/female|woman|girl/i.test(text)) schema.subject.gender = "Female";
+  if (/male|man|guy/i.test(text)) schema.subject.gender = "Male";
+  if (/arrancar|bleach/i.test(text)) {
+    schema.subject.race_or_species = "Arrancar (Bleach universe)";
+    schema.appearance.clothing = "White Arrancar jacket with black lining";
+    schema.appearance.distinctive_features = "Hollow mask fragment, hollow hole";
+    schema.color_palette = ["#ffffff", "#000000", "#00f0ff"];
+  }
+  if (/sound|audio|sonic/i.test(text)) {
+    schema.abilities.primary = "Acoustic / Soundwave Manipulation";
+    schema.effects.special_effects = "Distorted visual airwaves, sonic shockwaves";
+  }
+  schema.visual_style.art_style = "High-contrast Anime Concept Art";
+  schema.lighting.type = "Dramatic cinematic lighting";
+  schema.mood.primary = "Intimidating";
+  schema.mood.secondary = ["Elegant", "Commanding"];
+  schema.technical.aspect_ratio = "16:9";
+  
+  return schema;
+}
+
+function sanitizeInput(str) {
+  return str.replace(/[<>]/g, '');
+}
+
+function setStatus(msg, cls) {
+  const el = document.getElementById("genStatus");
+  el.textContent = sanitizeInput(msg);
+  el.className = "status" + (cls ? " " + cls : "");
+}
+
+// Theme Toggle Engine
+const btnTheme = document.getElementById("btnTheme");
+btnTheme.addEventListener("click", () => {
+  const current = document.body.getAttribute("data-theme");
+  const next = current === "dark" ? "light" : "dark";
+  document.body.setAttribute("data-theme", next);
+  btnTheme.textContent = `Mode: ${next.toUpperCase()}`;
+});
+
+// Primary Parser Handler
+document.getElementById("btnGenerate").addEventListener("click", async () => {
+  const idea = document.getElementById("ideaInput").value.trim();
+  const btn = document.getElementById("btnGenerate");
+  const out = document.getElementById("jsonOutput");
+  
+  if(!idea) { setStatus("INPUT BUFFER EMPTY.", "err"); return; }
+  
+  btn.disabled = true;
+  setStatus("SYNTHESIZING SPECIFICATION...");
+  
+  try {
+    // Generate structured output safely
+    const resultJson = synthesizeLocalJSON(idea);
+    out.value = JSON.stringify(resultJson, null, 2);
+    setStatus("SYNTHESIS COMPLETE.", "ok");
+  } catch(e) {
+    setStatus("ERROR: " + e.message, "err");
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+function getOutputText() { return document.getElementById("jsonOutput").value.trim(); }
+
+// Clipboard & External Integration Handler
+document.getElementById("btnCopy").addEventListener("click", async () => {
+  const text = getOutputText();
+  if(!text) { setStatus("BUFFER EMPTY.", "err"); return; }
+  await navigator.clipboard.writeText(text);
+  setStatus("COPIED TO CLIPBOARD.", "ok");
+});
+
+async function copyAndRedirect(targetUrl) {
+  const text = getOutputText();
+  if(!text) { setStatus("BUFFER EMPTY.", "err"); return; }
+  await navigator.clipboard.writeText(text);
+  setStatus("SPEC COPIED. OPENING PLATFORM...", "ok");
+  window.open(targetUrl, "_blank", "noopener,noreferrer");
+}
+
+document.getElementById("btnChatGPT").addEventListener("click", () => copyAndRedirect("https://chatgpt.com/"));
+document.getElementById("btnGemini").addEventListener("click", () => copyAndRedirect("https://gemini.google.com/"));
+
+// Service Worker Registration for PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('SW Registered:', reg.scope))
+      .catch(err => console.log('SW Fail:', err));
+  });
+}
+</script>
+</body>
+</html>

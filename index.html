@@ -4,13 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>ANIMUS // JSON Prompt Builder</title>
-<link rel="manifest" href="manifest.json">
+
+<link rel="manifest" href="https://tshoaele.github.io/json_builder/manifest.json">
 <meta name="theme-color" content="#0d1117">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PromptBuilder">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="https://tshoaele.github.io/json_builder/icon-192.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,10 +29,16 @@
   --accent-glow: rgba(0, 240, 255, 0.25);
   --danger: #ff0055;
   --ok: #00ff66;
+
   --font-head: 'Orbitron', sans-serif;
   --font-sub: 'Rajdhani', sans-serif;
   --font-mono: 'Share Tech Mono', monospace;
-  --grid-pattern: radial-gradient(rgba(0, 240, 255, 0.12) 1px, transparent 0);
+
+  --grid-pattern:
+    radial-gradient(
+      rgba(0, 240, 255, 0.12) 1px,
+      transparent 0
+    );
 }
 
 [data-theme="light"] {
@@ -45,252 +52,1455 @@
   --accent-glow: rgba(0, 119, 187, 0.2);
   --danger: #d73a49;
   --ok: #1a7f37;
-  --grid-pattern: radial-gradient(rgba(0, 119, 187, 0.15) 1px, transparent 0);
+
+  --grid-pattern:
+    radial-gradient(
+      rgba(0, 119, 187, 0.15) 1px,
+      transparent 0
+    );
 }
 
-* { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; min-height: 100%; background: var(--bg); color: var(--ink); font-family: var(--font-sub); }
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sub);
+}
 
 body {
-  display: flex; flex-direction: column; align-items: center;
-  padding: env(safe-area-inset-top, 20px) 16px calc(40px + env(safe-area-inset-bottom, 20px));
-  background-image: var(--grid-pattern); background-size: 24px 24px; transition: background 0.3s, color 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding:
+    env(safe-area-inset-top, 20px)
+    16px
+    calc(40px + env(safe-area-inset-bottom, 20px));
+
+  background-image: var(--grid-pattern);
+  background-size: 24px 24px;
+
+  transition:
+    background 0.3s,
+    color 0.3s;
 }
 
-.wrap { width: 100%; max-width: 880px; display: flex; flex-direction: column; gap: 18px; margin-top: 10px; }
+.wrap {
+  width: 100%;
+  max-width: 880px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 10px;
+}
 
-.header-bar { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--line-bright); padding-bottom: 12px; }
-.brand { display: flex; align-items: center; gap: 12px; }
+.header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid var(--line-bright);
+  padding-bottom: 12px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .brand .mark {
-  width: 34px; height: 34px; background: var(--accent);
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-  display: flex; align-items: center; justify-content: center; color: var(--bg); font-weight: 900; font-family: var(--font-head); font-size: 14px;
+  width: 34px;
+  height: 34px;
+  background: var(--accent);
+
+  clip-path:
+    polygon(
+      50% 0%,
+      100% 25%,
+      100% 75%,
+      50% 100%,
+      0% 75%,
+      0% 25%
+    );
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--bg);
+  font-weight: 900;
+  font-family: var(--font-head);
+  font-size: 14px;
+
   box-shadow: 0 0 12px var(--accent-glow);
 }
-.brand h1 { font-family: var(--font-head); font-size: 18px; letter-spacing: 2px; margin: 0; text-transform: uppercase; color: var(--ink); }
-.brand p { margin: 0; font-size: 12px; font-family: var(--font-mono); color: var(--ink-muted); letter-spacing: 1px; }
+
+.brand h1 {
+  font-family: var(--font-head);
+  font-size: 18px;
+  letter-spacing: 2px;
+  margin: 0;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.brand p {
+  margin: 0;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--ink-muted);
+  letter-spacing: 1px;
+}
 
 .theme-toggle {
-  background: transparent; border: 1px solid var(--line-bright); color: var(--accent);
-  font-family: var(--font-mono); font-size: 11px; padding: 6px 12px; cursor: pointer; text-transform: uppercase;
-  letter-spacing: 1px; transition: 0.2s; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+  background: transparent;
+  border: 1px solid var(--line-bright);
+  color: var(--accent);
+
+  font-family: var(--font-mono);
+  font-size: 11px;
+
+  padding: 6px 12px;
+
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  transition: 0.2s;
+
+  clip-path:
+    polygon(
+      8px 0,
+      100% 0,
+      100% calc(100% - 8px),
+      calc(100% - 8px) 100%,
+      0 100%,
+      0 8px
+    );
 }
-.theme-toggle:hover { background: var(--accent); color: var(--bg); }
+
+.theme-toggle:hover {
+  background: var(--accent);
+  color: var(--bg);
+}
 
 .panel {
-  background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--line-bright);
-  padding: 18px 20px; backdrop-filter: blur(8px); position: relative; overflow: hidden;
+  background: var(--panel);
+
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--line-bright);
+
+  padding: 18px 20px;
+
+  backdrop-filter: blur(8px);
+
+  position: relative;
+  overflow: hidden;
 }
 
-label.field-label { display: block; font-family: var(--font-head); font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin-bottom: 8px; }
+label.field-label {
+  display: block;
+
+  font-family: var(--font-head);
+  font-size: 11px;
+
+  text-transform: uppercase;
+  letter-spacing: 2px;
+
+  color: var(--accent);
+
+  margin-bottom: 8px;
+}
 
 textarea {
-  width: 100%; font-family: var(--font-mono); font-size: 13.5px; line-height: 1.5;
-  padding: 12px; border: 1px solid var(--line); background: rgba(0,0,0,0.2); color: var(--ink);
-  resize: vertical; outline: none; transition: border-color 0.2s;
-}
-textarea:focus { border-color: var(--line-bright); box-shadow: 0 0 8px var(--accent-glow); }
+  width: 100%;
 
-.btn-row { display: flex; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  line-height: 1.5;
+
+  padding: 12px;
+
+  border: 1px solid var(--line);
+
+  background: rgba(0, 0, 0, 0.2);
+
+  color: var(--ink);
+
+  resize: vertical;
+
+  outline: none;
+
+  transition: border-color 0.2s;
+}
+
+textarea:focus {
+  border-color: var(--line-bright);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.btn-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-top: 14px;
+
+  flex-wrap: wrap;
+}
+
 .btn {
-  font-family: var(--font-head); font-weight: 700; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
-  padding: 12px 22px; border: none; background: var(--accent); color: var(--bg); cursor: pointer;
-  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-  transition: all 0.2s; -webkit-tap-highlight-color: transparent;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 12px;
+
+  letter-spacing: 1.5px;
+
+  text-transform: uppercase;
+
+  padding: 12px 22px;
+
+  border: none;
+
+  background: var(--accent);
+  color: var(--bg);
+
+  cursor: pointer;
+
+  clip-path:
+    polygon(
+      10px 0,
+      100% 0,
+      100% calc(100% - 10px),
+      calc(100% - 10px) 100%,
+      0 100%,
+      0 10px
+    );
+
+  transition: all 0.2s;
+
+  -webkit-tap-highlight-color: transparent;
 }
-.btn:hover { opacity: 0.9; box-shadow: 0 0 12px var(--accent-glow); }
-.btn:active { transform: scale(0.98); }
-.btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.btn.secondary { background: transparent; color: var(--ink); border: 1px solid var(--line-bright); }
 
-.status { font-size: 12px; font-family: var(--font-mono); color: var(--ink-muted); width: 100%; margin-top: 4px; }
-.status.err { color: var(--danger); }
-.status.ok { color: var(--ok); }
+.btn:hover {
+  opacity: 0.9;
+  box-shadow: 0 0 12px var(--accent-glow);
+}
 
-.output-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
-.output-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn:active {
+  transform: scale(0.98);
+}
 
-textarea#jsonOutput { min-height: 240px; max-height: 50vh; white-space: pre; word-break: break-word; }
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn.secondary {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line-bright);
+}
+
+.status {
+  font-size: 12px;
+
+  font-family: var(--font-mono);
+
+  color: var(--ink-muted);
+
+  width: 100%;
+
+  margin-top: 4px;
+}
+
+.status.err {
+  color: var(--danger);
+}
+
+.status.ok {
+  color: var(--ok);
+}
+
+.output-head {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 10px;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+}
+
+.output-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+textarea#jsonOutput {
+  min-height: 360px;
+  max-height: 60vh;
+
+  white-space: pre;
+  word-break: break-word;
+}
+
+.schema-info {
+  margin-top: 10px;
+
+  font-family: var(--font-mono);
+  font-size: 10px;
+
+  color: var(--ink-muted);
+
+  line-height: 1.6;
+
+  opacity: 0.8;
+}
 
 footer.sig {
-  margin-top: auto; padding-top: 24px; font-family: var(--font-mono); font-size: 11px;
-  color: var(--accent); letter-spacing: 2px; text-transform: uppercase; opacity: 0.8; text-align: center;
+  margin-top: auto;
+
+  padding-top: 24px;
+
+  font-family: var(--font-mono);
+  font-size: 11px;
+
+  color: var(--accent);
+
+  letter-spacing: 2px;
+
+  text-transform: uppercase;
+
+  opacity: 0.8;
+
+  text-align: center;
 }
 
 @media (max-width: 600px) {
-  body { padding: 12px; }
-  .btn { width: 100%; text-align: center; }
-  .output-actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr 1fr; }
-  .output-actions .btn { width: auto; padding: 10px 6px; font-size: 10px; }
+
+  body {
+    padding: 12px;
+  }
+
+  .header-bar {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .brand h1 {
+    font-size: 15px;
+  }
+
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .output-actions {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      1fr 1fr 1fr;
+  }
+
+  .output-actions .btn {
+    width: auto;
+
+    padding: 10px 6px;
+
+    font-size: 10px;
+  }
 }
 </style>
 </head>
+
 <body data-theme="dark">
 
 <div class="wrap">
+
   <div class="header-bar">
+
     <div class="brand">
+
       <div class="mark">A</div>
+
       <div>
-        <h1>Animus // Spec Engine</h1>
-        <p>SYSTEM.PROMPT_EXTRACTION.v4</p>
+        <h1>Animus // JSON Prompt Forge</h1>
+        <p>STRUCTURED.VISUAL.PROMPT.v5</p>
       </div>
+
     </div>
-    <button class="theme-toggle" id="btnTheme">Mode: Dark</button>
+
+    <button class="theme-toggle" id="btnTheme">
+      Mode: Dark
+    </button>
+
   </div>
 
+
   <div class="panel">
-    <label class="field-label" for="ideaInput">// INPUT CONCEPT SEQUENCE</label>
-    <textarea id="ideaInput" rows="4" placeholder="Describe vision or concept...">Create a female Arrancar inspired by Bleach. She is elegant, intimidating and controls sound.</textarea>
+
+    <label class="field-label" for="ideaInput">
+      // INPUT CONCEPT SEQUENCE
+    </label>
+
+    <textarea
+      id="ideaInput"
+      rows="5"
+      placeholder="Describe the character, scene, world, ability, style or image you want to create..."
+    >Create a Black South African female elite soldier inspired by 86. She is calm, intimidating and highly disciplined. She uses a futuristic sniper rifle and commands a specialized autonomous combat unit.</textarea>
+
     <div class="btn-row">
-      <button class="btn" id="btnGenerate">EXECUTE PARSE</button>
-      <div class="status" id="genStatus">SYSTEM READY.</div>
+
+      <button
+        class="btn"
+        id="btnGenerate"
+      >
+        EXECUTE PARSE
+      </button>
+
+      <div
+        class="status"
+        id="genStatus"
+      >
+        SYSTEM READY.
+      </div>
+
     </div>
+
   </div>
+
 
   <div class="panel">
+
     <div class="output-head">
-      <label class="field-label" style="margin:0;">// STRUCTURED JSON SPECIFICATION</label>
+
+      <label
+        class="field-label"
+        style="margin:0;"
+      >
+        // STRUCTURED JSON PROMPT
+      </label>
+
       <div class="output-actions">
-        <button class="btn secondary" id="btnCopy">COPY</button>
-        <button class="btn secondary" id="btnChatGPT">CHATGPT</button>
-        <button class="btn secondary" id="btnGemini">GEMINI</button>
+
+        <button
+          class="btn secondary"
+          id="btnCopy"
+        >
+          COPY
+        </button>
+
+        <button
+          class="btn secondary"
+          id="btnChatGPT"
+        >
+          CHATGPT
+        </button>
+
+        <button
+          class="btn secondary"
+          id="btnGemini"
+        >
+          GEMINI
+        </button>
+
       </div>
+
     </div>
-    <textarea id="jsonOutput" spellcheck="false" placeholder="// Extracted JSON output will synthesize here..."></textarea>
+
+    <textarea
+      id="jsonOutput"
+      spellcheck="false"
+      placeholder="// Structured JSON prompt will synthesize here..."
+    ></textarea>
+
+    <div class="schema-info">
+      SCHEMA:
+      PROJECT //
+      CHARACTER //
+      OUTFIT //
+      WEAPON //
+      SIGNATURE_ABILITY //
+      UNIQUE_DEFINING_TRAIT //
+      WORLDBUILDING //
+      COMPOSITION //
+      VISUAL_STYLE //
+      POSTER_DESIGN //
+      TEXT_DIRECTION //
+      QUALITY //
+      NEGATIVE_PROMPT
+    </div>
+
   </div>
 
-  <footer class="sig">DESIGNED BY VUJA TSOAELA // ANIMUS INTERFACE</footer>
+
+  <footer class="sig">
+    DESIGNED BY VUJA TSOAELA // ANIMUS INTERFACE
+  </footer>
+
 </div>
 
+
 <script>
-function blankSchema(){
+
+/* =========================================================
+   MASTER JSON PROMPT SCHEMA
+   ========================================================= */
+
+function blankSchema() {
+
   return {
-    project:{type:"",title:"",concept:"",purpose:""},
-    subject:{type:"",name:"",role:"",identity:"",gender:"",age_appearance:"",race_or_species:"",affiliation:""},
-    appearance:{face:"",skin:"",hair:"",eyes:"",body_type:"",clothing:"",accessories:"",distinctive_features:""},
-    personality:[],
-    abilities:{primary:"",secondary:[],special_abilities:[],visual_effects:[]},
-    transformation:{name:"",trigger:"",appearance:"",abilities:"",visual_changes:""},
-    environment:{location:"",setting:"",architecture:"",background_elements:"",atmosphere:""},
-    composition:{subject_position:"",pose:"",camera_angle:"",camera_distance:"",framing:"",depth:"",foreground:"",midground:"",background:""},
-    visual_style:{medium:"",art_style:"",rendering_style:"",detail_level:"",realism:""},
-    lighting:{type:"",direction:"",intensity:"",rim_lighting:"",shadows:"",atmospheric_lighting:""},
-    color_palette:[],
-    mood:{primary:"",secondary:[],emotional_tone:""},
-    effects:{energy:"",particles:"",motion:"",special_effects:""},
-    typography:{enabled:false,header:"",title:"",subtitle:"",additional_text:""},
-    technical:{aspect_ratio:"",orientation:"",resolution:"",quality:"",image_count:1},
-    constraints:{must_include:[],must_avoid:[],negative_prompt:[]}
+
+    project: {
+      type: "",
+      title: "",
+      concept: "",
+      purpose: ""
+    },
+
+    character: {
+      name: "",
+      role: "",
+      identity: "",
+      gender: "",
+      age_appearance: "",
+      race_or_ethnicity: "",
+      species: "",
+      nationality: "",
+      affiliation: "",
+      rank_or_title: "",
+      personality: [],
+      demeanor: "",
+      backstory: ""
+    },
+
+    outfit: {
+      overall_design: "",
+      upper_body: "",
+      lower_body: "",
+      footwear: "",
+      armor: "",
+      materials: "",
+      colors: [],
+      accessories: [],
+      insignia: "",
+      condition: ""
+    },
+
+    weapon: {
+      name: "",
+      type: "",
+      design: "",
+      materials: "",
+      colors: [],
+      function: "",
+      special_features: [],
+      carried_position: ""
+    },
+
+    signature_ability: {
+      name: "",
+      type: "",
+      description: "",
+      activation: "",
+      visual_manifestation: "",
+      strengths: [],
+      limitations: []
+    },
+
+    unique_defining_trait: {
+      trait: "",
+      physical_expression: "",
+      behavioral_expression: "",
+      visual_importance: ""
+    },
+
+    worldbuilding: {
+      universe: "",
+      setting: "",
+      location: "",
+      faction: "",
+      technology_level: "",
+      lore_context: "",
+      environmental_details: [],
+      architecture: "",
+      atmosphere: ""
+    },
+
+    composition: {
+      subject_position: "",
+      pose: "",
+      action: "",
+      camera_angle: "",
+      camera_distance: "",
+      framing: "",
+      perspective: "",
+      depth: "",
+      foreground: "",
+      midground: "",
+      background: "",
+      focal_point: "",
+      visual_flow: ""
+    },
+
+    visual_style: {
+      medium: "",
+      art_style: "",
+      anime_influence: "",
+      rendering_style: "",
+      linework: "",
+      shading: "",
+      texture: "",
+      detail_level: "",
+      realism: "",
+      cinematic_quality: ""
+    },
+
+    poster_design: {
+      enabled: false,
+      layout: "",
+      graphic_elements: [],
+      border_style: "",
+      background_treatment: "",
+      typography_placement: "",
+      logo_placement: "",
+      character_emphasis: ""
+    },
+
+    text_direction: {
+      enabled: false,
+      header: "",
+      title: "",
+      subtitle: "",
+      additional_text: "",
+      typography_style: "",
+      placement: ""
+    },
+
+    quality: {
+      aspect_ratio: "",
+      orientation: "",
+      resolution: "",
+      image_count: 1,
+      quality_level: "",
+      detail_level: "",
+      consistency: "",
+      camera_quality: "",
+      rendering_quality: ""
+    },
+
+    negative_prompt: []
+
   };
+
 }
 
-const SYSTEM_INSTRUCT = `Extract a visual specification object from user text into this exact JSON structure:
-${JSON.stringify(blankSchema())}
-Rules:
-- Infer relevant fields based on tone/context.
-- Unspecified string fields = "", array fields = [], boolean fields = false.
-- Output raw JSON object only. No markdown fences.`;
 
-// Local Heuristic Fallback Engine (prevents client failure if external API is unconfigured)
+/* =========================================================
+   SYSTEM INSTRUCTION
+   ========================================================= */
+
+const SYSTEM_INSTRUCT = `
+
+Convert the user's concept into a structured visual JSON prompt.
+
+You MUST use this exact schema:
+
+${JSON.stringify(blankSchema(), null, 2)}
+
+RULES:
+
+1. Preserve the exact JSON structure.
+
+2. Do not create additional top-level fields.
+
+3. Infer logical visual information from the user's concept.
+
+4. Do not invent unnecessary information when it cannot reasonably be inferred.
+
+5. Unspecified string fields must remain "".
+
+6. Unspecified arrays must remain [].
+
+7. Unspecified boolean fields must remain false.
+
+8. image_count must remain 1 unless the user specifically requests multiple images.
+
+9. Convert descriptive ideas into useful visual-generation instructions.
+
+10. Character information belongs inside character.
+
+11. Clothing and equipment belong inside outfit.
+
+12. Weapons belong inside weapon.
+
+13. Signature powers belong inside signature_ability.
+
+14. A distinctive characteristic belongs inside unique_defining_trait.
+
+15. World, universe, factions and environment belong inside worldbuilding.
+
+16. Camera and scene arrangement belong inside composition.
+
+17. Artistic direction belongs inside visual_style.
+
+18. Poster-specific design belongs inside poster_design.
+
+19. Written words appearing inside the image belong inside text_direction.
+
+20. Resolution, aspect ratio and technical quality belong inside quality.
+
+21. Things that should NOT appear in the image belong inside negative_prompt.
+
+22. Arrays must contain individual items rather than long comma-separated strings.
+
+23. Keep the JSON valid.
+
+24. Output ONLY the raw JSON object.
+
+25. Do not use markdown fences.
+
+`;
+
+
+/* =========================================================
+   LOCAL HEURISTIC ENGINE
+   ========================================================= */
+
 function synthesizeLocalJSON(text) {
+
   const schema = blankSchema();
+
+  const lower = text.toLowerCase();
+
+  /*
+   * PROJECT
+   */
+
+  schema.project.type = "Character Visual Prompt";
+
+  schema.project.title =
+    "Generated Character Concept";
+
   schema.project.concept = text;
-  schema.project.type = "Character Visual Spec";
-  schema.subject.identity = text.slice(0, 40) + "...";
-  
-  if (/female|woman|girl/i.test(text)) schema.subject.gender = "Female";
-  if (/male|man|guy/i.test(text)) schema.subject.gender = "Male";
-  if (/arrancar|bleach/i.test(text)) {
-    schema.subject.race_or_species = "Arrancar (Bleach universe)";
-    schema.appearance.clothing = "White Arrancar jacket with black lining";
-    schema.appearance.distinctive_features = "Hollow mask fragment, hollow hole";
-    schema.color_palette = ["#ffffff", "#000000", "#00f0ff"];
+
+  schema.project.purpose =
+    "AI image generation";
+
+
+  /*
+   * CHARACTER
+   */
+
+  if (/female|woman|girl|lady/i.test(text)) {
+    schema.character.gender = "Female";
   }
-  if (/sound|audio|sonic/i.test(text)) {
-    schema.abilities.primary = "Acoustic / Soundwave Manipulation";
-    schema.effects.special_effects = "Distorted visual airwaves, sonic shockwaves";
+
+  if (/male|man|boy|guy/i.test(text)) {
+    schema.character.gender = "Male";
   }
-  schema.visual_style.art_style = "High-contrast Anime Concept Art";
-  schema.lighting.type = "Dramatic cinematic lighting";
-  schema.mood.primary = "Intimidating";
-  schema.mood.secondary = ["Elegant", "Commanding"];
-  schema.technical.aspect_ratio = "16:9";
-  
+
+  if (/black|african|south african/i.test(text)) {
+
+    schema.character.race_or_ethnicity =
+      "Black African";
+
+  }
+
+  if (/south african|south africa|sa\b/i.test(text)) {
+
+    schema.character.nationality =
+      "South African";
+
+  }
+
+  if (/soldier|military|warrior|combat/i.test(text)) {
+
+    schema.character.role =
+      "Elite Soldier";
+
+    schema.character.demeanor =
+      "Disciplined and combat-focused";
+
+  }
+
+  if (/elite/i.test(text)) {
+
+    schema.character.rank_or_title =
+      "Elite Combat Operative";
+
+  }
+
+
+  /*
+   * 86 / MILITARY SCIENCE FICTION
+   */
+
+  if (/86|eighty[- ]six|spearhead|legion/i.test(text)) {
+
+    schema.worldbuilding.universe =
+      "86 - Eighty-Six inspired military science fiction";
+
+    schema.worldbuilding.technology_level =
+      "Advanced futuristic military technology";
+
+    schema.worldbuilding.atmosphere =
+      "Bleak, militaristic, tense and technologically advanced";
+
+    schema.outfit.armor =
+      "Advanced lightweight military combat armor";
+
+    schema.outfit.materials =
+      "Composite armor, tactical fabric and reinforced military materials";
+
+    schema.weapon.type =
+      "Futuristic military firearm";
+
+    schema.visual_style.anime_influence =
+      "86 - Eighty-Six inspired anime military design";
+
+  }
+
+
+  /*
+   * ARRANCAR / BLEACH
+   */
+
+  if (/arrancar|bleach|hollow|soul reaper/i.test(text)) {
+
+    schema.worldbuilding.universe =
+      "Bleach inspired supernatural anime universe";
+
+    schema.character.species =
+      "Arrancar";
+
+    schema.outfit.overall_design =
+      "White Arrancar-inspired uniform with black detailing";
+
+    schema.character.affiliation =
+      "Arrancar";
+
+    schema.unique_defining_trait.trait =
+      "Distinctive Hollow identity";
+
+  }
+
+
+  /*
+   * WEAPONS
+   */
+
+  if (/sniper|rifle|marksman/i.test(text)) {
+
+    schema.weapon.type =
+      "Futuristic sniper rifle";
+
+    schema.weapon.function =
+      "Long-range precision combat";
+
+    schema.weapon.carried_position =
+      "Held in a controlled combat-ready position";
+
+  }
+
+  if (/sword|katana|blade/i.test(text)) {
+
+    schema.weapon.type =
+      "Anime-inspired sword";
+
+    schema.weapon.function =
+      "Close-range combat";
+
+  }
+
+
+  /*
+   * ABILITIES
+   */
+
+  if (/sound|sonic|audio|music/i.test(text)) {
+
+    schema.signature_ability.name =
+      "Sonic Manipulation";
+
+    schema.signature_ability.type =
+      "Sound-based supernatural ability";
+
+    schema.signature_ability.description =
+      "Manipulates sound waves as a weapon and sensory medium";
+
+    schema.signature_ability.visual_manifestation =
+      "Visible concentric sonic waves and subtle distortion in the surrounding air";
+
+  }
+
+  if (/fire|flame|flames|burn/i.test(text)) {
+
+    schema.signature_ability.name =
+      "Flame Manipulation";
+
+    schema.signature_ability.type =
+      "Elemental ability";
+
+    schema.signature_ability.description =
+      "Generates and controls intense flames";
+
+    schema.signature_ability.visual_manifestation =
+      "Dynamic flames, glowing embers and heat distortion";
+
+  }
+
+  if (/ice|frost|freeze/i.test(text)) {
+
+    schema.signature_ability.name =
+      "Cryokinesis";
+
+    schema.signature_ability.type =
+      "Elemental ability";
+
+    schema.signature_ability.description =
+      "Creates and controls ice";
+
+    schema.signature_ability.visual_manifestation =
+      "Crystalline ice formations, frost particles and cold mist";
+
+  }
+
+
+  /*
+   * PERSONALITY
+   */
+
+  if (/calm|quiet|reserved/i.test(text)) {
+    schema.character.personality.push("Calm");
+  }
+
+  if (/intimidating|intimidating presence|fearsome/i.test(text)) {
+    schema.character.personality.push("Intimidating");
+  }
+
+  if (/elegant|graceful/i.test(text)) {
+    schema.character.personality.push("Elegant");
+  }
+
+  if (/disciplined/i.test(text)) {
+    schema.character.personality.push("Highly disciplined");
+  }
+
+  if (/commanding|leader|commander/i.test(text)) {
+    schema.character.personality.push("Commanding");
+  }
+
+
+  /*
+   * WORLD
+   */
+
+  if (/city|urban|street|building/i.test(text)) {
+
+    schema.worldbuilding.setting =
+      "Urban environment";
+
+    schema.worldbuilding.architecture =
+      "Modern urban architecture";
+
+  }
+
+  if (/battlefield|warzone|combat zone/i.test(text)) {
+
+    schema.worldbuilding.setting =
+      "Active futuristic battlefield";
+
+    schema.worldbuilding.environmental_details.push(
+      "Damaged military infrastructure",
+      "Distant smoke",
+      "Battle debris"
+    );
+
+  }
+
+
+  /*
+   * COMPOSITION
+   */
+
+  schema.composition.subject_position =
+    "Primary subject centered or slightly off-center";
+
+  schema.composition.focal_point =
+    "Character";
+
+  schema.composition.depth =
+    "Layered foreground, midground and background";
+
+  schema.composition.foreground =
+    "Subtle environmental elements and atmospheric particles";
+
+  schema.composition.midground =
+    "Character and immediate environment";
+
+  schema.composition.background =
+    "Environment extending into atmospheric depth";
+
+
+  /*
+   * VISUAL STYLE
+   */
+
+  schema.visual_style.medium =
+    "Digital illustration";
+
+  schema.visual_style.art_style =
+    "High-end anime concept art";
+
+  schema.visual_style.rendering_style =
+    "Detailed cinematic anime rendering";
+
+  schema.visual_style.linework =
+    "Clean controlled anime linework";
+
+  schema.visual_style.shading =
+    "Detailed cinematic shading";
+
+  schema.visual_style.texture =
+    "Detailed fabric, armor and environmental textures";
+
+  schema.visual_style.detail_level =
+    "Extremely detailed";
+
+  schema.visual_style.realism =
+    "Anime realism";
+
+  schema.visual_style.cinematic_quality =
+    "High-end cinematic composition";
+
+
+  /*
+   * POSTER DESIGN
+   */
+
+  if (/poster|cover|key art|promotional/i.test(text)) {
+
+    schema.poster_design.enabled = true;
+
+    schema.poster_design.layout =
+      "Cinematic character poster";
+
+    schema.poster_design.character_emphasis =
+      "Strong visual emphasis on the primary character";
+
+    schema.poster_design.graphic_elements.push(
+      "Subtle futuristic interface elements",
+      "Minimal atmospheric graphics"
+    );
+
+  }
+
+
+  /*
+   * TEXT
+   */
+
+  if (/title|text|logo|typography|poster/i.test(text)) {
+
+    schema.text_direction.enabled = true;
+
+    schema.text_direction.typography_style =
+      "Clean cinematic anime typography";
+
+    schema.text_direction.placement =
+      "Integrated into the composition without obscuring the character";
+
+  }
+
+
+  /*
+   * QUALITY
+   */
+
+  schema.quality.aspect_ratio = "16:9";
+
+  schema.quality.orientation = "Landscape";
+
+  schema.quality.resolution =
+    "High resolution";
+
+  schema.quality.quality_level =
+    "Professional";
+
+  schema.quality.detail_level =
+    "Maximum practical detail";
+
+  schema.quality.consistency =
+    "Strong character and costume consistency";
+
+  schema.quality.camera_quality =
+    "Professional cinematic camera";
+
+  schema.quality.rendering_quality =
+    "High-end anime rendering";
+
+
+  /*
+   * NEGATIVE PROMPT
+   */
+
+  schema.negative_prompt = [
+    "low quality",
+    "blurry",
+    "pixelated",
+    "bad anatomy",
+    "deformed hands",
+    "extra fingers",
+    "missing fingers",
+    "duplicate limbs",
+    "duplicate character",
+    "distorted face",
+    "poor proportions",
+    "text artifacts",
+    "watermark",
+    "unwanted logo",
+    "cropped subject"
+  ];
+
+
+  /*
+   * REMOVE DUPLICATE PERSONALITY ITEMS
+   */
+
+  schema.character.personality =
+    [...new Set(schema.character.personality)];
+
+
+  /*
+   * RETURN
+   */
+
   return schema;
 }
 
+
+/* =========================================================
+   INPUT SANITIZATION
+   ========================================================= */
+
 function sanitizeInput(str) {
+
   return str.replace(/[<>]/g, '');
+
 }
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
 
 function setStatus(msg, cls) {
-  const el = document.getElementById("genStatus");
-  el.textContent = sanitizeInput(msg);
-  el.className = "status" + (cls ? " " + cls : "");
+
+  const el =
+    document.getElementById("genStatus");
+
+  el.textContent =
+    sanitizeInput(msg);
+
+  el.className =
+    "status" +
+    (cls ? " " + cls : "");
+
 }
 
-// Theme Toggle Engine
-const btnTheme = document.getElementById("btnTheme");
+
+/* =========================================================
+   THEME
+   ========================================================= */
+
+const btnTheme =
+  document.getElementById("btnTheme");
+
 btnTheme.addEventListener("click", () => {
-  const current = document.body.getAttribute("data-theme");
-  const next = current === "dark" ? "light" : "dark";
-  document.body.setAttribute("data-theme", next);
-  btnTheme.textContent = `Mode: ${next.toUpperCase()}`;
+
+  const current =
+    document.body.getAttribute("data-theme");
+
+  const next =
+    current === "dark"
+      ? "light"
+      : "dark";
+
+  document.body.setAttribute(
+    "data-theme",
+    next
+  );
+
+  btnTheme.textContent =
+    `Mode: ${next.toUpperCase()}`;
+
 });
 
-// Primary Parser Handler
-document.getElementById("btnGenerate").addEventListener("click", async () => {
-  const idea = document.getElementById("ideaInput").value.trim();
-  const btn = document.getElementById("btnGenerate");
-  const out = document.getElementById("jsonOutput");
-  
-  if(!idea) { setStatus("INPUT BUFFER EMPTY.", "err"); return; }
-  
-  btn.disabled = true;
-  setStatus("SYNTHESIZING SPECIFICATION...");
-  
-  try {
-    // Generate structured output safely
-    const resultJson = synthesizeLocalJSON(idea);
-    out.value = JSON.stringify(resultJson, null, 2);
-    setStatus("SYNTHESIS COMPLETE.", "ok");
-  } catch(e) {
-    setStatus("ERROR: " + e.message, "err");
-  } finally {
-    btn.disabled = false;
-  }
-});
 
-function getOutputText() { return document.getElementById("jsonOutput").value.trim(); }
+/* =========================================================
+   PRIMARY PARSER
+   ========================================================= */
 
-// Clipboard & External Integration Handler
-document.getElementById("btnCopy").addEventListener("click", async () => {
-  const text = getOutputText();
-  if(!text) { setStatus("BUFFER EMPTY.", "err"); return; }
-  await navigator.clipboard.writeText(text);
-  setStatus("COPIED TO CLIPBOARD.", "ok");
-});
+document
+  .getElementById("btnGenerate")
+  .addEventListener("click", async () => {
+
+    const idea =
+      document
+        .getElementById("ideaInput")
+        .value
+        .trim();
+
+    const btn =
+      document.getElementById("btnGenerate");
+
+    const out =
+      document.getElementById("jsonOutput");
+
+
+    if (!idea) {
+
+      setStatus(
+        "INPUT BUFFER EMPTY.",
+        "err"
+      );
+
+      return;
+    }
+
+
+    btn.disabled = true;
+
+    setStatus(
+      "SYNTHESIZING JSON PROMPT..."
+    );
+
+
+    try {
+
+      /*
+       * Offline local generation.
+       * No API key required.
+       */
+
+      const resultJson =
+        synthesizeLocalJSON(idea);
+
+
+      out.value =
+        JSON.stringify(
+          resultJson,
+          null,
+          2
+        );
+
+
+      setStatus(
+        "JSON PROMPT SYNTHESIS COMPLETE.",
+        "ok"
+      );
+
+    }
+
+    catch (e) {
+
+      setStatus(
+        "ERROR: " + e.message,
+        "err"
+      );
+
+    }
+
+    finally {
+
+      btn.disabled = false;
+
+    }
+
+  });
+
+
+/* =========================================================
+   OUTPUT
+   ========================================================= */
+
+function getOutputText() {
+
+  return document
+    .getElementById("jsonOutput")
+    .value
+    .trim();
+
+}
+
+
+/* =========================================================
+   COPY
+   ========================================================= */
+
+document
+  .getElementById("btnCopy")
+  .addEventListener("click", async () => {
+
+    const text =
+      getOutputText();
+
+    if (!text) {
+
+      setStatus(
+        "BUFFER EMPTY.",
+        "err"
+      );
+
+      return;
+    }
+
+    try {
+
+      await navigator.clipboard
+        .writeText(text);
+
+      setStatus(
+        "JSON PROMPT COPIED.",
+        "ok"
+      );
+
+    }
+
+    catch (e) {
+
+      setStatus(
+        "COPY FAILED.",
+        "err"
+      );
+
+    }
+
+  });
+
+
+/* =========================================================
+   PLATFORM REDIRECT
+   ========================================================= */
 
 async function copyAndRedirect(targetUrl) {
-  const text = getOutputText();
-  if(!text) { setStatus("BUFFER EMPTY.", "err"); return; }
-  await navigator.clipboard.writeText(text);
-  setStatus("SPEC COPIED. OPENING PLATFORM...", "ok");
-  window.open(targetUrl, "_blank", "noopener,noreferrer");
+
+  const text =
+    getOutputText();
+
+  if (!text) {
+
+    setStatus(
+      "BUFFER EMPTY.",
+      "err"
+    );
+
+    return;
+  }
+
+
+  try {
+
+    await navigator.clipboard
+      .writeText(text);
+
+    setStatus(
+      "SPEC COPIED. OPENING PLATFORM...",
+      "ok"
+    );
+
+    window.open(
+      targetUrl,
+      "_blank",
+      "noopener,noreferrer"
+    );
+
+  }
+
+  catch (e) {
+
+    setStatus(
+      "COPY FAILED.",
+      "err"
+    );
+
+  }
+
 }
 
-document.getElementById("btnChatGPT").addEventListener("click", () => copyAndRedirect("https://chatgpt.com/"));
-document.getElementById("btnGemini").addEventListener("click", () => copyAndRedirect("https://gemini.google.com/"));
 
-// Service Worker Registration for PWA
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('SW Registered:', reg.scope))
-      .catch(err => console.log('SW Fail:', err));
-  });
+document
+  .getElementById("btnChatGPT")
+  .addEventListener(
+    "click",
+    () =>
+      copyAndRedirect(
+        "https://chatgpt.com/"
+      )
+  );
+
+
+document
+  .getElementById("btnGemini")
+  .addEventListener(
+    "click",
+    () =>
+      copyAndRedirect(
+        "https://gemini.google.com/"
+      )
+  );
+
+
+/* =========================================================
+   PWA SERVICE WORKER
+   ========================================================= */
+
+if ("serviceWorker" in navigator) {
+
+  window.addEventListener(
+    "load",
+    () => {
+
+      navigator.serviceWorker
+        .register("./sw.js")
+
+        .then(
+          reg =>
+            console.log(
+              "SW Registered:",
+              reg.scope
+            )
+        )
+
+        .catch(
+          err =>
+            console.log(
+              "SW Fail:",
+              err
+            )
+        );
+
+    }
+  );
+
 }
+
 </script>
+
 </body>
 </html>
